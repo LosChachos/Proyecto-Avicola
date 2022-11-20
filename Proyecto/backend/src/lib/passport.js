@@ -3,13 +3,14 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy;
 const db = require('../util/database')
 const helpers = require('../lib/helpers');
+const {loginUser} = require("../util/consultas");
 
 passport.use('local.login', new LocalStrategy({
     usernameField: 'user',          // Nombre del campo  convertir a constante
     passwordsField: 'password',      // Nombre del campo  convertir a constante
     passReqToCallback: true
 }, async (req, username, password, done) => {
-    const rows = await db.query('SELECT * FROM users WHERE username = ?', [username]);
+    const rows = await db.query(loginUser, [username]);
     console.log(rows);
     if (rows.length > 0) {
         const user = rows[0];
@@ -40,7 +41,7 @@ passport.use('local.signup', new LocalStrategy({
         phone
     };
 
-    const usernameInto = await db.query('SELECT * FROM users WHERE username = ?', [username])
+    const usernameInto = await db.query(loginUser, [username])
     if (usernameInto.length == 0) {
         try {
 
