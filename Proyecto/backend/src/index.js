@@ -38,7 +38,8 @@ app.use((req,res, next) => {
 // Routes
 app.use(require('./routes'));
 app.use(require('./routes/authentication/login'));
-app.use('/farms',require('./routes/farms'));
+app.use('/farms',require('./routes/places/farms'));
+app.use('/:id_farm/sheds',require('./routes/places/sheds'));
 
 // Public
 app.use(express.static(path.join(__dirname, 'public')));
