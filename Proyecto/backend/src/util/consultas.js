@@ -19,7 +19,8 @@ const consultas = {
     getDailyReports: "SELECT * FROM daily_reports WHERE id_lot = ? ",
     verifyDateReport: "SELECT * FROM daily_reports WHERE daily_reports.date = DATE(now()) AND id_lot = ?",
     updateConsumption: "UPDATE daily_reports SET waterConsumption = ? WHERE id_lot = ?  AND daily_reports.date = DATE(now())",
-    updateDeaths: "UPDATE daily_reports SET numberOfDeaths = ? WHERE id_lot = ?  AND daily_reports.date = DATE(now()) "
+    updateDeaths: "UPDATE daily_reports SET numberOfDeaths = ? WHERE id_lot = ?  AND daily_reports.date = DATE(now()) ",
+    createFood: "",
 };
 
 module.exports = consultas;
