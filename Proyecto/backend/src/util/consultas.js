@@ -14,7 +14,12 @@ const consultas = {
     getSheds: "Select * from sheds where id_farm = ?",
     getShed: "Select * from sheds where id_farm = ? and shedNumber = ?",
     updateShed: "UPDATE sheds SET shedNumber = ?, width = ?, length = ? WHERE id = ?",
-    deleteShed: "DELETE FROM sheds WHERE id = ?"
+    deleteShed: "DELETE FROM sheds WHERE id = ?",
+    createDailyReport: "INSERT INTO daily_reports (date, numberOfDeaths, waterConsumption, id_lot) VALUES (DATE(NOW()),?,?,?)",
+    getDailyReports: "SELECT * FROM daily_reports WHERE id_lot = ? ",
+    verifyDateReport: "SELECT * FROM daily_reports WHERE daily_reports.date = DATE(now()) AND id_lot = ?",
+    updateConsumption: "UPDATE daily_reports SET waterConsumption = ? WHERE id_lot = ?  AND daily_reports.date = DATE(now())",
+    updateDeaths: "UPDATE daily_reports SET numberOfDeaths = ? WHERE id_lot = ?  AND daily_reports.date = DATE(now()) "
 };
 
 module.exports = consultas;
