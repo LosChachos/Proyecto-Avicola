@@ -8,9 +8,10 @@ helpers.encryptPassword = async (password) => {
     return hash;
 };
 
+// Verifica la contraseña y returna true o false
 helpers.matchPassword = async (password, savedPassword) => {
     try {
-        await bcrypt.compare(password, savedPassword);
+        return await bcrypt.compare(password, savedPassword);
     } catch (error) {
         console.error(error);
     }

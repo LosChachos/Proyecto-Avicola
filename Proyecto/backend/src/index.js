@@ -1,6 +1,5 @@
 const express = require('express');
 const morgan = require('morgan');
-const exphbs = require('express-handlebars');
 const path = require('path');
 const passport = require('passport');
 const express_session = require('express-session');
@@ -8,7 +7,6 @@ const express_session = require('express-session');
 // Constantes
 const CONST = {
     PORT: 5000,
-    loginDir: "" 
 };
 
 // Initializations
@@ -31,16 +29,20 @@ app.use(passport.session()); // persistent login sessions
 
 
 // Global variables
-app.use((req,res, next) => {
+app.use((req, res, next) => {
+    app.locals.user = req.user;
     next();
 });
 
 // Routes
-app.use(require('./routes'));
-app.use(require('./routes/authentication/login'));
+/* app.use(require('./routes')); */
+app.use(require('./routes/authentication'));
 app.use('/farms',require('./routes/places/farms'));
 app.use('/farm', require('./routes/places/sheds'));
 app.use('/farm', require('./routes/places/lots'));
+app.use('/:id_farm/sheds',require('./routes/places/sheds'));
+app.use('/farm',require('./routes/inventory/daily_reports'));
+app.use('/farm/foods',require('./routes/inventory/foods'));
 
 // Public
 app.use(express.static(path.join(__dirname, 'public')));

@@ -3,33 +3,30 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy;
 const db = require('../util/database')
 const helpers = require('../lib/helpers');
-const {loginUser} = require("../util/consultas");
+const {loginUser, loginId, insertPerson, insertUser} = require("../util/consultas");
 
 passport.use('local.login', new LocalStrategy({
-    usernameField: 'user',          // Nombre del campo  convertir a constante
-    passwordsField: 'password',      // Nombre del campo  convertir a constante
+    usernameField: 'user',                                // Nombre del campo  convertir a constante
+    passwordsField: 'password',                          // Nombre del campo  convertir a constante
     passReqToCallback: true
 }, async (req, username, password, done) => {
     const rows = await db.query(loginUser, [username]);
-    console.log(rows);
     if (rows.length > 0) {
         const user = rows[0];
-        console.log(user.password);
         const validPassword = await helpers.matchPassword(password, user.password);
-        console.log(validPassword);
         if (validPassword) {
             done(null, user );
         } else {
-            done('Contraseña inválida');
+            done('Contraseña inválida');                            // Modificar para la vista
         }
     } else {
-        return done('El usuario no existe');
+        return done('El usuario no existe');                        // Modificar para la vista
     }
 }));
 
 passport.use('local.signup', new LocalStrategy({
-    usernameField: 'user',          // Nombre del campo  convertir a constante
-    passwordsField: 'password',      // Nombre del campo  convertir a constante
+    usernameField: 'user',                                          // Nombre del campo  convertir a constante
+    passwordsField: 'password',                                      // Nombre del campo  convertir a constante
     passReqToCallback: true
 }, async (req, username, password, done) => {
     const { id, name, lastname, email, phone } = req.body;
@@ -45,24 +42,23 @@ passport.use('local.signup', new LocalStrategy({
     if (usernameInto.length == 0) {
         try {
 
-            await db.query('INSERT INTO persons SET ?', [newPerson]);
+            await db.query(insertPerson, [newPerson]);
             const newUser = {
                 username,
                 password,
-                user_type: "Admin",  // Nombre  del campo   convertir   a constante
+                user_type: "Admin",                                     // Nombre  del campo   convertir   a constante
                 id_person: id
             }
             newUser.password = await helpers.encryptPassword(password);
-            const result = await db.query('INSERT INTO users SET ?', [newUser]);
+            const result = await db.query(insertUser, [newUser]);
             newUser.id = result.insertId;
-            console.log(result);
             return done(null, newUser);
 
         } catch (error) {
-            return done("Usuario con esa identificación ya existe");
+            return done("Usuario con esa identificación ya existe");      // Modificar para la vista
         }
     } else {
-        return done("Nombre de usuario ya existe" );
+        return done("Nombre de usuario ya existe" );                        // Modificar para la vista
     }
 }));
 
@@ -71,6 +67,6 @@ passport.serializeUser((user, done) => {
 });
 
 passport.deserializeUser(async (id, done) => {
-    const rows = await db.query('SELECT * FROM users WHERE id = ?', [id]);
+    const rows = await db.query(loginId, [id]);
     done(null, rows[0]);
 });

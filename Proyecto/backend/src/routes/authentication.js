@@ -17,15 +17,20 @@ router.post('/signup', passport.authenticate('local.signup',{
 }));
 
 router.get('/login', (req,res) => {
-    res.send('Bienvenido al login');
+    res.send('Bienvenido al login');                                //Modificar
+});
+
+router.get('/logout', (req,res) => {
+    req.logOut();
+    res.redirect('/login');
 });
 
 router.get('/profile', (req,res) => {
-    res.send("Inicio de sesión exitoso");
+    res.send("Inicio de sesión exitoso, Hola " + req.user.username);  //Modificar
 });
 
 router.get('/signup', (req,res) => {
-    res.send("Inicio de sesión");
+    res.send("Inicio de sesión");                                       //Modificar
 });
 
 module.exports = router;
