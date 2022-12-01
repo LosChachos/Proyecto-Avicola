@@ -20,7 +20,11 @@ const consultas = {
     verifyDateReport: "SELECT * FROM daily_reports WHERE daily_reports.date = DATE(now()) AND id_lot = ?",
     updateConsumption: "UPDATE daily_reports SET waterConsumption = ? WHERE id_lot = ?  AND daily_reports.date = DATE(now())",
     updateDeaths: "UPDATE daily_reports SET numberOfDeaths = ? WHERE id_lot = ?  AND daily_reports.date = DATE(now()) ",
-    createFood: "",
+    createFood: "INSERT INTO foods (id, name, mark) VALUES (?, ?, ?)",
+    searchFoodById: "SELECT * FROM foods WHERE id = ?",
+    getFoods: "SELECT * FROM foods",
+    createFoodInventory: "INSERT INTO food_inventory (id, price, id_food) VALUES (?, ?, ?)",
+    getFoodInventory: "SELECT * FROM food_inventory WHERE id = ?"
 };
 
 module.exports = consultas;
