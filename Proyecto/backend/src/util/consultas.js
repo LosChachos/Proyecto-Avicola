@@ -24,7 +24,22 @@ const consultas = {
     searchFoodById: "SELECT * FROM foods WHERE id = ?",
     getFoods: "SELECT * FROM foods",
     createFoodInventory: "INSERT INTO food_inventory (id, price, id_food) VALUES (?, ?, ?)",
-    getFoodInventory: "SELECT * FROM food_inventory WHERE id = ?"
+    getFoodInventory: "SELECT * FROM food_inventory WHERE id = ?",
+    getLots: "Select * from lots where id_shed = ?",
+    getLot: "Select * from lots where id_shed = ? and lotNumber = ?",
+    createLot: "INSERT INTO lots (race, amount_hens, lotNumber, id_shed) VALUES (?,?,?,?)",
+    updateLot: "UPDATE lots SET race = ?, amount_hens = ?, lotNumber = ? WHERE id = ?",
+    deleteLot: "DELETE FROM lots WHERE id = ?",
+    createVaccinationDate: "INSERT INTO vaccination_date (initialDate, finalDate, illness, application_method, id_lot) VALUES (?, ?, ?, ?, ?)",
+    getCosts: "Select * from costs where id_lot = ?",
+    getCost: "Select * from costs where id_cost = ?",
+    createCost: "INSERT INTO costs (description, price, date, id_lot) VALUES (?,?,?,?)",
+    updateCost: "UPDATE costs SET description = ?, price = ?, date = ? WHERE id = ?",
+    deleteCost: "DELETE FROM costs WHERE id = ?",
+    deleteCosts: "DELETE FROM costs WHERE id_lot = ?",
+    deleteVaccinationDate: "DELETE FROM vaccination_date WHERE id_lot = ?",
+    deleteDailyReports: "DELETE FROM daily_reports WHERE id_lot = ?",
+    deleteWeightHistory: "DELETE FROM weight_history WHERE id_lot = ?",
 };
 
 module.exports = consultas;
