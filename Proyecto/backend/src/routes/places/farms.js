@@ -3,8 +3,8 @@ const express = require('express');
 const router = express.Router();
 const {getFarms, createFarm, lastId, createUserFarm, updateFarm, deleteFarm, deleteUserFarm} = require("../../util/consultas");
 
-router.get('/', async (req, res) => {
-    const id = req.user.id;
+router.get('/:id/farms', async (req, res) => {
+    const id = req.params.id;
     const rows = await db.query(getFarms, [id]);
     res.send(rows);
 });

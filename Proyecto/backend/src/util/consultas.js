@@ -11,7 +11,7 @@ const consultas = {
     deleteFarm: "DELETE FROM farms WHERE id = ?",
     deleteUserFarm: "DELETE FROM users_farms WHERE id_farm = ?",
     createShed: "INSERT INTO sheds (shedNumber, width, length, id_farm) VALUES (?,?,?,?)",
-    getSheds: "Select * from sheds where id_farm = ?",
+    getSheds: "Select id, shedNumber, width, length, coalesce(( select sum(amount_hens) from sheds s join lots l on s.id = l.id_shed group by id_shed having id_shed = id),0) as amount_hens from sheds where id_farm = ?",
     getShed: "Select * from sheds where id_farm = ? and shedNumber = ?",
     updateShed: "UPDATE sheds SET shedNumber = ?, width = ?, length = ? WHERE id = ?",
     deleteShed: "DELETE FROM sheds WHERE id = ?",

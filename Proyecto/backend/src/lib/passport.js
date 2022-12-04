@@ -3,7 +3,7 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy;
 const db = require('../util/database')
 const helpers = require('../lib/helpers');
-const {loginUser, loginId, insertPerson, insertUser} = require("../util/consultas");
+const { loginUser, loginId, insertPerson, insertUser } = require("../util/consultas");
 
 passport.use('local.login', new LocalStrategy({
     usernameField: 'user',                                // Nombre del campo  convertir a constante
@@ -15,9 +15,9 @@ passport.use('local.login', new LocalStrategy({
         const user = rows[0];
         const validPassword = await helpers.matchPassword(password, user.password);
         if (validPassword) {
-            done(null, user );
+            return done(null, user);
         } else {
-            done('Contraseña inválida');                            // Modificar para la vista
+            return done('Contraseña inválida');                            // Modificar para la vista
         }
     } else {
         return done('El usuario no existe');                        // Modificar para la vista
@@ -58,7 +58,7 @@ passport.use('local.signup', new LocalStrategy({
             return done("Usuario con esa identificación ya existe");      // Modificar para la vista
         }
     } else {
-        return done("Nombre de usuario ya existe" );                        // Modificar para la vista
+        return done("Nombre de usuario ya existe");                        // Modificar para la vista
     }
 }));
 
