@@ -18,8 +18,8 @@ const consultas = {
     createDailyReport: "INSERT INTO daily_reports (date, numberOfDeaths, waterConsumption, id_lot) VALUES (DATE(NOW()),?,?,?)",
     getDailyReports: "SELECT * FROM daily_reports WHERE id_lot = ? ",
     verifyDateReport: "SELECT * FROM daily_reports WHERE daily_reports.date = DATE(now()) AND id_lot = ?",
-    updateConsumption: "UPDATE daily_reports SET waterConsumption = ? WHERE id_lot = ?  AND daily_reports.date = DATE(now())",
-    updateDeaths: "UPDATE daily_reports SET numberOfDeaths = ? WHERE id_lot = ?  AND daily_reports.date = DATE(now()) ",
+    updateConsumption: "UPDATE daily_reports SET waterConsumption = (waterConsumption+?) WHERE id_lot = ?  AND daily_reports.date = DATE(now())",
+    updateDeaths: "UPDATE daily_reports SET numberOfDeaths = (numberOfDeaths+?) WHERE id_lot = ?  AND daily_reports.date = DATE(now()) ",
     createFood: "INSERT INTO foods (id, name, mark) VALUES (?, ?, ?)",
     searchFoodById: "SELECT * FROM foods WHERE id = ?",
     getFoods: "SELECT * FROM foods",
@@ -40,6 +40,7 @@ const consultas = {
     deleteVaccinationDate: "DELETE FROM vaccination_date WHERE id_lot = ?",
     deleteDailyReports: "DELETE FROM daily_reports WHERE id_lot = ?",
     deleteWeightHistory: "DELETE FROM weight_history WHERE id_lot = ?",
+    getAllUsernames: "SELECT username from users"
 };
 
 module.exports = consultas;
