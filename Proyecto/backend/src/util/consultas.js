@@ -1,8 +1,8 @@
 const consultas = {
     loginUser: "SELECT * FROM users WHERE username = ?",
     loginId: "SELECT * FROM users WHERE id = ?",
-    insertPerson: "INSERT INTO persons SET ?",
-    insertUser: "INSERT INTO users SET ?",
+    insertPerson: "INSERT INTO persons (id, name, lastname, email, phone) VALUES (?,?,?,?,?)",
+    insertUser: "INSERT INTO users (username, password, user_type, id_person) VALUES (?,?,?,?)",
     getFarms: "Select id, name from farms f join users_farms u on f.id = u.id_farm where u.id_user = ?",
     createFarm: "INSERT INTO farms (name) VALUES (?)",
     lastId: "Select last_insert_id() as id",

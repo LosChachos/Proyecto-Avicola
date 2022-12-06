@@ -37,7 +37,6 @@ passport.use('local.signup', new LocalStrategy({
         email,
         phone
     };
-
     const usernameInto = await db.query(loginUser, [username])
     if (usernameInto.length == 0) {
         try {
