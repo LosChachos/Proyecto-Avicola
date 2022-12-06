@@ -14,13 +14,13 @@ router.get('/:id_farm/:id_shed/lots', async (req, res) => {
 
 router.post('/:id_farm/:id_shed/lots/add', async (req, res) => {
     const id_shed = req.params.id_shed;
-    const {race, amount_hens, lotNumber} = req.body;
+    const {race, amount_hens, lotNumber, dateOfBirth} = req.body;
     const lot = await db.query(getLot, [id_shed, lotNumber]);
     if(lot.length == 0){
-        await db.query(createLot, [race, amount_hens, lotNumber, id_shed]);
+        await db.query(createLot, [race, amount_hens, lotNumber, dateOfBirth, id_shed]);
         var id = (await db.query(lastId))[0].id;
         console.log(id);
-        createVaccinationPlan(id);
+        createVaccinationPlan(id, dateOfBirth);
         res.send(true)
     }else{
         res.send("Ya hay un lote con ese numero de identificación en este galpon")
@@ -29,10 +29,10 @@ router.post('/:id_farm/:id_shed/lots/add', async (req, res) => {
 
 router.put('/:id_farm/:id_shed/lots/update', async (req, res) => {
     const id_shed = req.params.id_shed;
-    const {id, race, amount_hens, lotNumber} = req.body;
+    const {id, race, amount_hens, lotNumber, dateOfBirth} = req.body;
     const lot = await db.query(getLot, [id_shed, lotNumber]);
     if(lot.length == 0 || (lot.length == 1 && id == lot[0].id)){
-        await db.query(updateLot, [race, amount_hens, lotNumber, id]);
+        await db.query(updateLot, [race, amount_hens, lotNumber, dateOfBirth, id]);
         res.send(true);
     }else{
         res.send("Ya hay un lote con ese numero de identificación en este galpon")
@@ -49,25 +49,25 @@ router.delete('/:id_farm/:id_shed/lots/delete', async (req, res) => {
     res.send(true);
 })
 
-function createVaccinationPlan(id) {
-    var currentDate = new Date(Date.now());
-    insertVaccinationDate(currentDate, sumDays(7), diseases[0], applicationMethod[0]+", "+applicationMethod[1]+", "+applicationMethod[5]+", "+applicationMethod[4], id);
-    insertVaccinationDate(currentDate, sumDays(7), diseases[1], applicationMethod[0], id);
-    insertVaccinationDate(sumDays(7), sumDays(14), diseases[0], applicationMethod[0]+", "+applicationMethod[1]+", "+applicationMethod[5]+", "+applicationMethod[4], id);
-    insertVaccinationDate(sumDays(7), sumDays(14), diseases[1], applicationMethod[0], id);
-    insertVaccinationDate(sumDays(14), sumDays(21), diseases[0], applicationMethod[0]+", "+applicationMethod[1]+", "+applicationMethod[5]+", "+applicationMethod[4], id);
-    insertVaccinationDate(sumDays(14), sumDays(21), diseases[1], applicationMethod[0], id);
-    insertVaccinationDate(sumDays(35), sumDays(42), diseases[3], applicationMethod[5], id);
-    insertVaccinationDate(sumDays(35), sumDays(42), diseases[4], applicationMethod[3], id);
-    insertVaccinationDate(sumDays(63), sumDays(70), diseases[0], applicationMethod[0]+", "+applicationMethod[1]+", "+applicationMethod[5]+", "+applicationMethod[4], id);
-    insertVaccinationDate(sumDays(77), sumDays(84), diseases[3], applicationMethod[5], id);
-    insertVaccinationDate(sumDays(77), sumDays(84), diseases[4], applicationMethod[3], id);
-    insertVaccinationDate(sumDays(91), sumDays(98), diseases[0], applicationMethod[0]+", "+applicationMethod[1]+", "+applicationMethod[5]+", "+applicationMethod[4], id);
-    insertVaccinationDate(sumDays(112), sumDays(119), diseases[5], applicationMethod[0]+", "+applicationMethod[1]+", "+applicationMethod[4], id);
+function createVaccinationPlan(id, dateOfBirth) {
+    var currentDate = new Date(dateOfBirth);
+    insertVaccinationDate(currentDate, sumDays(7, dateOfBirth), diseases[0], applicationMethod[0]+", "+applicationMethod[1]+", "+applicationMethod[5]+", "+applicationMethod[4], id);
+    insertVaccinationDate(currentDate, sumDays(7, dateOfBirth), diseases[1], applicationMethod[0], id);
+    insertVaccinationDate(sumDays(7, dateOfBirth), sumDays(14, dateOfBirth), diseases[0], applicationMethod[0]+", "+applicationMethod[1]+", "+applicationMethod[5]+", "+applicationMethod[4], id);
+    insertVaccinationDate(sumDays(7, dateOfBirth), sumDays(14, dateOfBirth), diseases[1], applicationMethod[0], id);
+    insertVaccinationDate(sumDays(14, dateOfBirth), sumDays(21, dateOfBirth), diseases[0], applicationMethod[0]+", "+applicationMethod[1]+", "+applicationMethod[5]+", "+applicationMethod[4], id);
+    insertVaccinationDate(sumDays(14, dateOfBirth), sumDays(21, dateOfBirth), diseases[1], applicationMethod[0], id);
+    insertVaccinationDate(sumDays(35, dateOfBirth), sumDays(42, dateOfBirth), diseases[3], applicationMethod[5], id);
+    insertVaccinationDate(sumDays(35, dateOfBirth), sumDays(42, dateOfBirth), diseases[4], applicationMethod[3], id);
+    insertVaccinationDate(sumDays(63, dateOfBirth), sumDays(70, dateOfBirth), diseases[0], applicationMethod[0]+", "+applicationMethod[1]+", "+applicationMethod[5]+", "+applicationMethod[4], id);
+    insertVaccinationDate(sumDays(77, dateOfBirth), sumDays(84, dateOfBirth), diseases[3], applicationMethod[5], id);
+    insertVaccinationDate(sumDays(77, dateOfBirth), sumDays(84, dateOfBirth), diseases[4], applicationMethod[3], id);
+    insertVaccinationDate(sumDays(91, dateOfBirth), sumDays(98, dateOfBirth), diseases[0], applicationMethod[0]+", "+applicationMethod[1]+", "+applicationMethod[5]+", "+applicationMethod[4], id);
+    insertVaccinationDate(sumDays(112, dateOfBirth), sumDays(119, dateOfBirth), diseases[5], applicationMethod[0]+", "+applicationMethod[1]+", "+applicationMethod[4], id);
 }
 
-function sumDays(days){
-    var currentDate = new Date(Date.now());
+function sumDays(days, dateOfBirth){
+    var currentDate = new Date(dateOfBirth);
     currentDate.setDate(currentDate.getDate() + days );
     return currentDate;
 }
