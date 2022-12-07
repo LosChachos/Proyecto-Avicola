@@ -23,7 +23,8 @@ const consultas = {
     createFood: "INSERT INTO foods (id, name, mark) VALUES (?, ?, ?)",
     searchFoodById: "SELECT * FROM foods WHERE id = ?",
     getFoods: "SELECT * FROM foods",
-    createFoodInventory: "INSERT INTO food_inventory (id, price, id_food) VALUES (?, ?, ?)",
+    getFood: "SELECT * FROM foods WHERE id = ?",
+    createFoodInventory: "INSERT INTO food_inventory (price, amount, id_food, id_farm) VALUES (?, ?, ?, ?)",
     getFoodInventory: "SELECT * FROM food_inventory WHERE id = ?",
     getAllLots: "Select l.id, lotNumber, dateOfBirth, shedNumber, amount_hens, race from lots l join sheds s on l.id_shed = s.id",
     getLots: "Select * from lots where id_shed = ?",
@@ -43,7 +44,24 @@ const consultas = {
     deleteWeightHistory: "DELETE FROM weight_history WHERE id_lot = ?",
     getAllUsernames: "SELECT username from users",
     getUserWithSocialN: "SELECT * FROM users u join persons p on p.id = u.id_person where username=?",
-    getInfoUser: "SELECT p.name, p.lastname, p.phone from persons p join users u on p.id = u.id_person where u.username = ?"
+    getInfoUser: "SELECT p.name, p.lastname, p.phone from persons p join users u on p.id = u.id_person where u.username = ?",
+    updateInventory: "UPDATE food_inventory SET price = ?, amount = ?, id_food = ? WHERE id = ?",
+    createFoodWarehouse: "INSERT INTO food_warehouse (id_user, id_food_inventory, date, amount) VALUES (?, ?, now() ,?)",
+    getLastFoodWarehouse: "SELECT * FROM food_warehouse fw JOIN food_inventory fi ON fw.id_food_inventory = fi.id WHERE fi.id_food = ? and fi.id_farm = ? and date = (SELECT max(date) FROM food_warehouse)",
+    updateFoodWarehouse: "UPDATE food_warehouse SET amount = (amount+?) WHERE id_user = ? AND id_food_inventory = ?",
+    getAmountOffOOD: "SELECT sum(fi.amount) FROM food_warehouse fw JOIN food_inventory fi ON fw.id_food_inventory = fi.id where fi.id_food = 2222 and fi.id_farm = 1 group by fi.id_food, fi.id_farm",
+    lastId: "Select last_insert_id() as id",
+    addAmountFoodInventory: "UPDATE food_inventory SET amount = (amount+?) WHERE id = ?",
+    updateFoodInventory: "UPDATE food_inventory SET amount = ? WHERE id = ?",
+    getFoodInventories: "SELECT id_food, name, mark, weigth, sum(amount) as cantidad FROM food_inventory fi JOIN foods f ON fi.id_food = f.id WHERE id_farm = ? GROUP BY id_food ;",
+    calculateAmountInInventory: "SELECT sum(amount) FROM food_inventory WHERE id_food = ?",
+    getFoodInventoryHistory: "SELECT id_food, name , mark, weigth, price, date, fw.amount as cantidad, id_food_inventory FROM food_warehouse fw JOIN food_inventory fi ON fw.id_food_inventory = fi.id JOIN foods f ON fi.id_food = f.id WHERE id_food = ? AND id_farm = ?",
+    getLots: "Select * from lots where id_shed = ?",
+    getWeight: "Select * from weight_history",
+    createWeight: "INSERT INTO weight_history (weight, date, id_lot) VALUES (?, DATE(NOW()),?)",
+    updateWeight: "UPDATE weight_history SET weight = ? WHERE id = ?",
+    deleteWeight: "DELETE FROM weight_history WHERE id = ?",
+    getVaccinationDate: "Select * from vaccination_date where id_lot = ? order by initialDate"
 };
 
 module.exports = consultas;
