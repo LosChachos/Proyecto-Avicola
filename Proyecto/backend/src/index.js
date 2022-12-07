@@ -34,6 +34,7 @@ app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
 
 
+
 // Global variables
 app.use((req, res, next) => {
     app.locals.user = req.user;
@@ -50,6 +51,7 @@ app.use('/farm', require('./routes/places/costs'));
 app.use('/farm', require('./routes/places/weight_history'));
 app.use('/farm',require('./routes/inventory/daily_reports'));
 app.use('/farm/foods',require('./routes/inventory/foods'));
+app.use('/farm',require('./routes/inventory/food_inventory'));
 
 // Public
 app.use(express.static(path.join(__dirname, 'public')));
