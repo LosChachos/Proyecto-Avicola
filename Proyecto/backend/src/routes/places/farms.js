@@ -3,9 +3,9 @@ const express = require('express');
 const router = express.Router();
 const {getFarms, createFarm, lastId, createUserFarm, updateFarm, deleteFarm, deleteUserFarm} = require("../../util/consultas");
 
-router.get('/:id/farms', async (req, res) => {
-    const id = req.params.id;
-    const rows = await db.query(getFarms, [id]);
+router.get('/:email/farms', async (req, res) => {
+    const email = req.params.email;
+    const rows = await db.query(getFarms, [email]);
     res.send(rows);
 });
 
