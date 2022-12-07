@@ -48,6 +48,7 @@ app.use(require('./routes/places/farms'));
 app.use('/farm', require('./routes/places/sheds'));
 app.use('/farm', require('./routes/places/lots'));
 app.use('/farm', require('./routes/places/costs'));
+app.use('/farm', require('./routes/places/weight_history'));
 app.use('/farm',require('./routes/inventory/daily_reports'));
 app.use('/farm/foods',require('./routes/inventory/foods'));
 app.use('/farm',require('./routes/inventory/food_inventory'));

@@ -53,7 +53,13 @@ const consultas = {
     updateFoodInventory: "UPDATE food_inventory SET amount = ? WHERE id = ?",
     getFoodInventories: "SELECT id_food, name, mark, weigth, sum(amount) as cantidad FROM food_inventory fi JOIN foods f ON fi.id_food = f.id WHERE id_farm = ? GROUP BY id_food ;",
     calculateAmountInInventory: "SELECT sum(amount) FROM food_inventory WHERE id_food = ?",
-    getFoodInventoryHistory: "SELECT id_food, name , mark, weigth, price, date, fw.amount as cantidad, id_food_inventory FROM food_warehouse fw JOIN food_inventory fi ON fw.id_food_inventory = fi.id JOIN foods f ON fi.id_food = f.id WHERE id_food = ? AND id_farm = ?"
+    getFoodInventoryHistory: "SELECT id_food, name , mark, weigth, price, date, fw.amount as cantidad, id_food_inventory FROM food_warehouse fw JOIN food_inventory fi ON fw.id_food_inventory = fi.id JOIN foods f ON fi.id_food = f.id WHERE id_food = ? AND id_farm = ?",
+    getLots: "Select * from lots where id_shed = ?",
+    getWeight: "Select * from weight_history",
+    createWeight: "INSERT INTO weight_history (weight, date, id_lot) VALUES (?, DATE(NOW()),?)",
+    updateWeight: "UPDATE weight_history SET weight = ? WHERE id = ?",
+    deleteWeight: "DELETE FROM weight_history WHERE id = ?",
+    getVaccinationDate: "Select * from vaccination_date where id_lot = ? order by initialDate"
 };
 
 module.exports = consultas;
