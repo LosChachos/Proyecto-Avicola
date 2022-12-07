@@ -29,9 +29,9 @@ async function createNewFoodInventory(id_user, price, id_food, id_farm, amount){
 }
 
 router.put('/:id_farm/food_inventory/',async (req, res) => {
-    const {id_food_Inventory, amount} = req.body;
+    const {id_food_Inventory, amount, id_user} = req.body;
     try {
-        await db.query(updateFoodInventory,[amount,id_food_Inventory]);
+        await db.query(updateFoodInventory,[amount,id_user,id_food_Inventory]);
         res.send(true);
     } catch (error) {
         res.send(false);
