@@ -26,7 +26,7 @@ router.put('/:id_farm/sheds/update', async (req, res) => {
     const id_farm = req.params.id_farm;
     const {id, shedNumber, width, length} = req.body;
     const shed = await db.query(getShed, [id_farm, shedNumber]);
-    if(shed.length == 0){
+    if(shed.length == 0 || (shed.length == 1 && id == shed[0].id)){
         await db.query(updateShed, [shedNumber, width, length, id]);
         res.send(true);
     }else{

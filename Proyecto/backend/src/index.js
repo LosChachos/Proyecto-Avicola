@@ -19,10 +19,16 @@ app.set('port', process.env.PORT || CONST.PORT);
 
 
 // middleware
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+    res.header('Allow', 'GET, POST, OPTIONS, PUT, DELETE');
+    next();
+});
 app.use(morgan('dev'));
 app.use(express.urlencoded({extended: false}));
 app.use(express.json());
-
 app.use(express_session({ secret: 'SECRET' })); // session secret
 app.use(passport.initialize());
 app.use(passport.session()); // persistent login sessions
@@ -38,10 +44,10 @@ app.use((req, res, next) => {
 // Routes
 /* app.use(require('./routes')); */
 app.use(require('./routes/authentication'));
-app.use('/farms',require('./routes/places/farms'));
+app.use(require('./routes/places/farms'));
 app.use('/farm', require('./routes/places/sheds'));
 app.use('/farm', require('./routes/places/lots'));
-app.use('/:id_farm/sheds',require('./routes/places/sheds'));
+app.use('/farm', require('./routes/places/costs'));
 app.use('/farm',require('./routes/inventory/daily_reports'));
 app.use('/farm/foods',require('./routes/inventory/foods'));
 app.use('/farm',require('./routes/inventory/food_inventory'));

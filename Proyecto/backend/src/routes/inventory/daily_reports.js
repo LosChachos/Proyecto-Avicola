@@ -21,7 +21,7 @@ router.post('/:id_farm/:id_lot/daily_report/add', async (req, res) => {
    res.send(true)
 });
 
-router.get('/:id_farm/:id_shed/:id_lot/daily_report', async (req, res) => {
+router.get('/:id_farm/:id_lot/daily_report', async (req, res) => {
    const id = req.params.id_lot;
    const rows = await db.query(getDailyReports, [id]);
    res.send(rows);
