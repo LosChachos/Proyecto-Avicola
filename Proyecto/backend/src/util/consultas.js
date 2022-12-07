@@ -41,7 +41,13 @@ const consultas = {
     deleteVaccinationDate: "DELETE FROM vaccination_date WHERE id_lot = ?",
     deleteDailyReports: "DELETE FROM daily_reports WHERE id_lot = ?",
     deleteWeightHistory: "DELETE FROM weight_history WHERE id_lot = ?",
-    getAllUsernames: "SELECT username from users"
+    getAllUsernames: "SELECT username from users",
+    getLots: "Select * from lots where id_shed = ?",
+    getWeight: "Select * from weight_history",
+    createWeight: "INSERT INTO weight_history (weight, date, id_lot) VALUES (?, DATE(NOW()),?)",
+    updateWeight: "UPDATE weight_history SET weight = ? WHERE id = ?",
+    deleteWeight: "DELETE FROM weight_history WHERE id = ?",
+    getVaccinationDate: "Select * from vaccination_date where id_lot = ? order by initialDate"
 };
 
 module.exports = consultas;
