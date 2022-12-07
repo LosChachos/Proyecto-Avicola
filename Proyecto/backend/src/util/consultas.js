@@ -20,11 +20,17 @@ const consultas = {
     verifyDateReport: "SELECT * FROM daily_reports WHERE daily_reports.date = DATE(now()) AND id_lot = ?",
     updateConsumption: "UPDATE daily_reports SET waterConsumption = ? WHERE id_lot = ?  AND daily_reports.date = DATE(now())",
     updateDeaths: "UPDATE daily_reports SET numberOfDeaths = ? WHERE id_lot = ?  AND daily_reports.date = DATE(now()) ",
-    createFood: "INSERT INTO foods (id, name, mark) VALUES (?, ?, ?)",
+    createFood: "INSERT INTO foods (id, name, mark, weigth) VALUES (?, ?, ? ,?)",
     searchFoodById: "SELECT * FROM foods WHERE id = ?",
     getFoods: "SELECT * FROM foods",
-    createFoodInventory: "INSERT INTO food_inventory (id, price, id_food) VALUES (?, ?, ?)",
-    getFoodInventory: "SELECT * FROM food_inventory WHERE id = ?"
+    getFood: "SELECT * FROM foods WHERE id = ?",
+    createFoodInventory: "INSERT INTO food_inventory (price, id_food, id_farm) VALUES (?, ?, ?)",
+    getFoodInventory: "SELECT * FROM food_inventory WHERE id = ?",
+    updateInventory: "UPDATE food_inventory SET price = ?, amount = ?, id_food = ? WHERE id = ?",
+    createFoodWarehouse: "INSERT INTO food_warehouse (id_user, id_food_inventory, date, amount) VALUES (?, ?, now() ,?)",
+    getLastFoodWarehouse: "SELECT * FROM food_warehouse fw JOIN food_inventory fi ON fw.id_food_inventory = fi.id WHERE fi.id_food = ? and fi.id_farm = ? and date = (SELECT max(date) FROM food_warehouse)",
+    updateFoodWarehouse: "UPDATE food_warehouse SET amount = (amount+?) WHERE id_user = ? AND id_food_inventory = ?",
+    getAmountOffOOD: "SELECT sum(fi.amount) FROM food_warehouse fw JOIN food_inventory fi ON fw.id_food_inventory = fi.id where fi.id_food = 2222 and fi.id_farm = 1 group by fi.id_food, fi.id_farm"
 };
 
 module.exports = consultas;

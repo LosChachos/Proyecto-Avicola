@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const {getDailyReports, createDailyReport, verifyDateReport, updateConsumption, updateDeaths} = require('../../util/consultas');
 
-router.post('/:id_farm/:id_shed/:id_lot/daily_report/add', async (req, res) => {
+router.post('/:id_farm/:id_lot/daily_report/add', async (req, res) => {
    const {consumption, deaths} = req.body;
    const id_lot =  req.params.id_lot;
    const actualReport  = await db.query(verifyDateReport, [parseInt(id_lot)]);
