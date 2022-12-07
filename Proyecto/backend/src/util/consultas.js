@@ -3,7 +3,7 @@ const consultas = {
     loginId: "SELECT * FROM users WHERE id = ?",
     insertPerson: "INSERT INTO persons (id, name, lastname, email, phone) VALUES (?,?,?,?,?)",
     insertUser: "INSERT INTO users (username, password, user_type, id_person) VALUES (?,?,?,?)",
-    getFarms: "Select id, name from farms f join users_farms u on f.id = u.id_farm where u.id_user = ?",
+    getFarms: "Select f.id, f.name from farms f join users_farms u on f.id = u.id_farm join users us on u.id_user = us.id where us.username = ?",
     createFarm: "INSERT INTO farms (name) VALUES (?)",
     lastIdLot: "Select id from lots order by id DESC limit 1",
     createUserFarm: "INSERT INTO users_farms (id_user, id_farm, date) VALUES (?,?,DATE(NOW()))",
@@ -16,10 +16,10 @@ const consultas = {
     updateShed: "UPDATE sheds SET shedNumber = ?, width = ?, length = ? WHERE id = ?",
     deleteShed: "DELETE FROM sheds WHERE id = ?",
     createDailyReport: "INSERT INTO daily_reports (date, numberOfDeaths, waterConsumption, id_lot) VALUES (DATE(NOW()),?,?,?)",
-    getDailyReports: "SELECT * FROM daily_reports WHERE id_lot = ? ",
+    getDailyReports: "SELECT d.id_lot, d.date, d.numberOfDeaths, d.waterConsumption, l.lotNumber FROM daily_reports d join lots l on l.id = d.id_lot WHERE d.id_lot = ?",
     verifyDateReport: "SELECT * FROM daily_reports WHERE daily_reports.date = DATE(now()) AND id_lot = ?",
-    updateConsumption: "UPDATE daily_reports SET waterConsumption = (waterConsumption+?) WHERE id_lot = ?  AND daily_reports.date = DATE(now())",
-    updateDeaths: "UPDATE daily_reports SET numberOfDeaths = (numberOfDeaths+?) WHERE id_lot = ?  AND daily_reports.date = DATE(now()) ",
+    updateConsumption: "UPDATE daily_reports SET waterConsumption = ? WHERE id_lot = ?  AND daily_reports.date = DATE(now())",
+    updateDeaths: "UPDATE daily_reports SET numberOfDeaths = ? WHERE id_lot = ?  AND daily_reports.date = DATE(now()) ",
     createFood: "INSERT INTO foods (id, name, mark) VALUES (?, ?, ?)",
     searchFoodById: "SELECT * FROM foods WHERE id = ?",
     getFoods: "SELECT * FROM foods",
@@ -41,7 +41,9 @@ const consultas = {
     deleteVaccinationDate: "DELETE FROM vaccination_date WHERE id_lot = ?",
     deleteDailyReports: "DELETE FROM daily_reports WHERE id_lot = ?",
     deleteWeightHistory: "DELETE FROM weight_history WHERE id_lot = ?",
-    getAllUsernames: "SELECT username from users"
+    getAllUsernames: "SELECT username from users",
+    getUserWithSocialN: "SELECT * FROM users u join persons p on p.id = u.id_person where username=?",
+    getInfoUser: "SELECT p.name, p.lastname, p.phone from persons p join users u on p.id = u.id_person where u.username = ?"
 };
 
 module.exports = consultas;

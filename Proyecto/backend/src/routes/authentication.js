@@ -2,8 +2,11 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const db = require('../util/database')
-const {getAllUsernames, loginUser, insertPerson, insertUser} = require("../util/consultas");
+const { getAllUsernames, loginUser, getUserWithSocialN, insertPerson, insertUser, getInfoUser } = require("../util/consultas");
 const helpers = require('../lib/helpers');
+const transporter = require('../util/mailer');
+const secpass = '!8231cnas1ASd1';
+let code = 0;
 
 router.post('/login', function (req, res, next) {
     passport.authenticate('local.login', function (err, user, info) {
@@ -17,17 +20,11 @@ router.post('/login', function (req, res, next) {
 });
 
 router.post('/signup', async (req, res) => {
-    const id = req.body['id'];
-    const names = req.body['names'];
-    const lastnames = req.body['lastnames'];
-    const email = req.body['email'];
-    const phone = req.body['phone'];
-    const username = req.body['username'];
-    const pass = req.body['pass'];
+    const {id, names, lastnames, email, phone, username, pass} = req.body;
     const usernameInto = await db.query(loginUser, [username]);
     if (usernameInto.length == 0) {
         try {
-            await db.query(insertPerson, [id,names,lastnames,email,phone]);
+            await db.query(insertPerson, [id, names, lastnames, email, phone]);
             const passEncrypted = await helpers.encryptPassword(pass);
             const result = await db.query(insertUser, [username, passEncrypted, 'Admin', id]);
             const newUser = {
@@ -54,7 +51,7 @@ router.get('/login', (req, res) => {
     res.send('Bienvenido al login');
 });
 
-router.get('/users',async (req, res)=>{
+router.get('/users', async (req, res) => {
     const rows = await db.query(getAllUsernames);
     res.send(rows);
 })
@@ -64,13 +61,70 @@ router.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 
-router.get('/profile', (req, res) => {
-    res.write(req.user);
-    console.log(req.user);
+router.post('/profile', async (req, res) => {
+    try {
+        const { email } = req.body;
+        const rows = await db.query(getInfoUser, [email]);
+        res.send(rows);
+    } catch (error) {
+        console.log(error)
+    }
 });
 
 router.get('/signup', (req, res) => {
     res.send("Inicio de sesión");
 });
+
+router.post('/forgotpass', async (req, res) => {
+    try {
+        const { email } = req.body;
+        const rows = await db.query(getUserWithSocialN, [email]);
+        if (rows.length > 0) {
+            await helpers.matchPassword(secpass, rows[0].password).then(
+                (res2) => {
+                    if (!res2) {
+                        this.code = Math.floor(Math.random * 10000);
+                        transporter.sendMail({
+                            from: '"RECUPERACIÓN DE CONTRASEÑA - SIGEAVI" <sigeavi.soporte@gmail.com>', // sender address
+                            to: email, // list of receivers
+                            subject: "🐔 Código de confirmación recuperación de contraseña 🐔", // Subject line
+                            html: `
+                                 <b>Cordial Saludo!</b>
+                                 <br>
+                                 <p>Estimado ${rows[0].name} ${rows[0].lastname}</p>
+                                 <br>
+                                 <p>Desde el equipo de SIGEAVI hemos detectado que has olvidado tu contraseña a continuacion tendrás que registrar el siguiente código en tu aplicación SIGEAVI para que puedas elegir una nueva contraseña y asi poder ingresar nuevamente a disfrutar de nuestros servicios 🐔</p>
+                                 <br>
+                                 <img src='https://i.postimg.cc/McxFzXSz/logo.png' alt='' width='100px'>
+                                 <br>
+                                 <b style='font-size:20px;'>Codigo: ${this.code}</b>
+                                 <br>
+                                 <br>
+                                 <b>Sistema de gestión y trazabilidad de granjas avicolas SIGEAVI</b>
+                                 <br>
+                                 <br>
+                                 <p>Este correo ha sido autogenerado. Porfavor evite responder este mensaje</p>
+                            `
+                        });
+                        res.send('1');
+                    }else{
+                        res.send('0');
+                    }
+                }
+            ).catch(
+                err => console.log(err)
+            );
+            
+        }else{ // -1 no existe, 1 exitoso, 0 servicio externo
+            res.send('-1')
+        }
+    } catch (error) {
+    }
+});
+
+router.get('/verifycode/:code',(req, res)=>{
+    const codeInput = req.params.code;
+});
+
 
 module.exports = router;
