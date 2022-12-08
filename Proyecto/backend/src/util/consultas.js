@@ -39,6 +39,7 @@ const consultas = {
     deleteCost: "DELETE FROM costs WHERE id = ?",
     deleteCosts: "DELETE FROM costs WHERE id_lot = ?",
     deleteVaccinationDate: "DELETE FROM vaccination_date WHERE id_lot = ?",
+    updateVaccinationDate: "UPDATE vaccination_date SET observations = ? WHERE id = ?",
     deleteDailyReports: "DELETE FROM daily_reports WHERE id_lot = ?",
     deleteWeightHistory: "DELETE FROM weight_history WHERE id_lot = ?",
     getAllUsernames: "SELECT username from users",
@@ -47,7 +48,56 @@ const consultas = {
     createWeight: "INSERT INTO weight_history (weight, date, id_lot) VALUES (?, DATE(NOW()),?)",
     updateWeight: "UPDATE weight_history SET weight = ? WHERE id = ?",
     deleteWeight: "DELETE FROM weight_history WHERE id = ?",
-    getVaccinationDate: "Select * from vaccination_date where id_lot = ? order by initialDate"
+    getVaccinationDate: "Select * from vaccination_date where id_lot = ? order by initialDate",
+    getReportDailyFood: `Select h.id_lot, s.shedNumber, l.lotNumber, h.foodDate, sum(h.amount*a.weight) as alimento_consumido
+    from eating_history h join food_inventory f on h.id_food_inventory = f.id
+    join foods a on f.id_food = a.id
+    join farms g on f.id_farm = g.id
+    join lots l on h.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    where h.foodDate between ? and ? and g.id = ?
+    group by h.id_lot, h.foodDate`,
+    getReportFoodAll: `Select h.id_lot, s.shedNumber, l.lotNumber, sum(h.amount*a.weight) as total_consumido,sum(h.amount*a.weight)/l.amount_hens as promedio
+    from eating_history h join food_inventory f on h.id_food_inventory = f.id
+    join foods a on f.id_food = a.id
+    join farms g on f.id_farm = g.id
+    join lots l on h.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    where h.foodDate between ? and ? and g.id = ?
+    group by h.id_lot`,
+    getReportDailyWater: `Select 	l.id, s.shedNumber, l.lotNumber, r.date, r.waterConsumption
+    from lots l join daily_reports r on r.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    join farms f on s.id_farm = f.id
+    where r.date between ? and ? and f.id = ?`,
+    getReportWaterAll: `Select 	l.id, s.shedNumber, l.lotNumber, sum(r.waterConsumption) as Consumo_total, sum(r.waterConsumption)/l.amount_hens as promedio
+    from lots l join daily_reports r on r.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    join farms f on s.id_farm = f.id
+    where r.date between ? and ? and f.id = ?
+    group by l.id`,
+    getReportDailyDeath: `Select l.id, s.shedNumber, l.lotNumber, r.date, r.numberOfDeaths
+    from lots l join daily_reports r on r.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    join farms f on s.id_farm = f.id
+    where r.date between ? and ? and f.id = ?`,
+    getReportDeathAll: `Select l.id, s.shedNumber, l.lotNumber, sum(r.numberOfDeaths) as Muertes_totales
+    from lots l join daily_reports r on r.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    join farms f on s.id_farm = f.id
+    where r.date between ? and ? and f.id = ?
+    group by l.id`,
+    getReportDailyCosts: `Select l.id, s.shedNumber, l.lotNumber, c.date, c.description, c.price
+    from lots l join costs c on c.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    join farms f on s.id_farm = f.id
+    where c.date between ? and ? and f.id = ?`,
+    getReportCostsAll: `Select l.id, s.shedNumber, l.lotNumber, sum(c.price) as Costo_total
+    from lots l join costs c on c.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    join farms f on s.id_farm = f.id
+    where c.date between ? and ? and f.id = ?
+    group by l.id`
 };
 
 module.exports = consultas;

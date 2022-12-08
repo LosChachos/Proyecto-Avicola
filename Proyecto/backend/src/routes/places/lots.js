@@ -1,7 +1,7 @@
 const db = require('../../util/database')
 const express = require('express');
 const router = express.Router();
-const { getLots, getAllLots, getLot, createLot, updateLot, deleteLot, lastIdLot, createVaccinationDate, deleteCosts, deleteVaccinationDate, deleteDailyReports, deleteWeightHistory, getVaccinationDate } = require("../../util/consultas");
+const { getLots, getAllLots, getLot, createLot, updateLot, deleteLot, lastIdLot, createVaccinationDate, deleteCosts, deleteVaccinationDate, deleteDailyReports, deleteWeightHistory, getVaccinationDate, updateVaccinationDate } = require("../../util/consultas");
 const diseases = ["Newcastle", "Gumboro", "Bronquitis Infecciosa", "Coriza", "Viruela", "Salmonella"];
 const applicationMethod = ["Agua de bebida", "Spray", "Gota ocular", "Puncion alar", "Inyeccion intramuscular", "Inyeccion subcutanea"];
 
@@ -20,6 +20,12 @@ router.get('/:id_farm/lots/:id_lot/vaccination_date', async (req, res) => {
     const id_lot = req.params.id_lot;
     const rows = await db.query(getVaccinationDate, [id_lot]);
     res.send(rows);
+});
+
+router.put('/:id_farm/lots/:id_lot/vaccination_date/update', async (req, res) => {
+    const { id, observations } = req.body;
+    await db.query(updateVaccinationDate, [observations, id]);
+    res.send(true);
 });
 
 router.post('/:id_farm/:id_shed/lots/add', async (req, res) => {
