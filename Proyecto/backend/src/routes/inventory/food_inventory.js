@@ -1,7 +1,7 @@
 const db = require('../../util/database')
 const express = require('express');
 const router = express.Router();
-const {createFoodInventory, getFoodInventory, getFoodInventories, getLastFoodWarehouse, createFoodWarehouse, lastId, updateFoodWarehouse, addAmountFoodInventory, updateFoodInventory, getFoodInventoryHistory} = require('../../util/consultas');
+const {createFoodInventory, getFoodInventories, getLastFoodWarehouse, createFoodWarehouse, lastId, updateFoodWarehouse, addAmountFoodInventory, updateFoodInventory, getFoodInventoryHistory} = require('../../util/consultas');
 
 router.post('/:id_farm/food_inventory/add', async (req, res) => {
     const {price, id_food, amount, id_user} = req.body;
