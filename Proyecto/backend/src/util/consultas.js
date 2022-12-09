@@ -41,6 +41,7 @@ const consultas = {
     deleteCosts: "DELETE FROM costs WHERE id_lot = ?",
     updateVaccinationDate: "UPDATE vaccination_date SET observations = ? WHERE id = ?",
     deleteVaccinationDate: "DELETE FROM vaccination_date WHERE id_lot = ?",
+    updateVaccinationDate: "UPDATE vaccination_date SET observations = ? WHERE id = ?",
     deleteDailyReports: "DELETE FROM daily_reports WHERE id_lot = ?",
     deleteWeightHistory: "DELETE FROM weight_history WHERE id_lot = ?",
     getAllUsernames: "SELECT username from users",
@@ -55,6 +56,9 @@ const consultas = {
     addAmountFoodInventory: "UPDATE food_inventory SET amount = (amount+?) WHERE id = ?",
     updateFoodInventory: "UPDATE food_inventory SET amount = ? WHERE id = ?",
     getFoodInventories: "SELECT id_food, name, mark, weight/1000 as weight, sum(amount) as cantidad FROM food_inventory fi JOIN foods f ON fi.id_food = f.id WHERE id_farm = ? GROUP BY id_food ;",
+    updateFoodInventory: "UPDATE food_warehouse SET amount = ? WHERE id_user = ? AND id_food_inventory = ?",
+    getFoodInventories: "SELECT id_food, name, mark, weight, sum(amount) as cantidad FROM food_inventory fi JOIN foods f ON fi.id_food = f.id WHERE id_farm = ? GROUP BY id_food",
+    getFoodInventories:"SELECT id_food, name, mark, weight, sum(fi.amount)- COALESCE(sum(eh.amount),0) as cantidad FROM eating_history eh RIGHT JOIN food_inventory fi ON eh.id_food_inventory = fi.id INNER JOIN foods f ON fi.id_food = f.id WHERE id_farm = ? GROUP BY id_food",
     calculateAmountInInventory: "SELECT sum(amount) FROM food_inventory WHERE id_food = ?",
     getFoodInventoryHistory: "SELECT id_food, name , mark, weight/1000 as weight, price, date, fw.amount as cantidad, id_food_inventory FROM food_warehouse fw JOIN food_inventory fi ON fw.id_food_inventory = fi.id JOIN foods f ON fi.id_food = f.id WHERE id_food = ? AND id_farm = ?",
     getLots: "Select * from lots where id_shed = ?",
@@ -62,7 +66,63 @@ const consultas = {
     createWeight: "INSERT INTO weight_history (weight, date, id_lot) VALUES (?,?,?)",
     updateWeight: "UPDATE weight_history SET weight = ? WHERE date = ? and id_lot=?",
     deleteWeight: "DELETE FROM weight_history WHERE id = ?",
-    getVaccinationDate: "Select * from vaccination_date where id_lot = ? order by initialDate"
+    getVaccinationDate: "Select * from vaccination_date where id_lot = ? order by initialDate",
+    getReportDailyFood: `Select h.id_lot, s.shedNumber, l.lotNumber, h.foodDate, sum(h.amount*a.weight) as alimento_consumido
+    from eating_history h join food_inventory f on h.id_food_inventory = f.id
+    join foods a on f.id_food = a.id
+    join farms g on f.id_farm = g.id
+    join lots l on h.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    where h.foodDate between ? and ? and g.id = ?
+    group by h.id_lot, h.foodDate`,
+    getReportFoodAll: `Select h.id_lot, s.shedNumber, l.lotNumber, sum(h.amount*a.weight) as total_consumido,sum(h.amount*a.weight)/l.amount_hens as promedio
+    from eating_history h join food_inventory f on h.id_food_inventory = f.id
+    join foods a on f.id_food = a.id
+    join farms g on f.id_farm = g.id
+    join lots l on h.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    where h.foodDate between ? and ? and g.id = ?
+    group by h.id_lot`,
+    getReportDailyWater: `Select 	l.id, s.shedNumber, l.lotNumber, r.date, r.waterConsumption
+    from lots l join daily_reports r on r.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    join farms f on s.id_farm = f.id
+    where r.date between ? and ? and f.id = ?`,
+    getReportWaterAll: `Select 	l.id, s.shedNumber, l.lotNumber, sum(r.waterConsumption) as Consumo_total, sum(r.waterConsumption)/l.amount_hens as promedio
+    from lots l join daily_reports r on r.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    join farms f on s.id_farm = f.id
+    where r.date between ? and ? and f.id = ?
+    group by l.id`,
+    getReportDailyDeath: `Select l.id, s.shedNumber, l.lotNumber, r.date, r.numberOfDeaths
+    from lots l join daily_reports r on r.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    join farms f on s.id_farm = f.id
+    where r.date between ? and ? and f.id = ?`,
+    getReportDeathAll: `Select l.id, s.shedNumber, l.lotNumber, sum(r.numberOfDeaths) as Muertes_totales
+    from lots l join daily_reports r on r.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    join farms f on s.id_farm = f.id
+    where r.date between ? and ? and f.id = ?
+    group by l.id`,
+    getReportDailyCosts: `Select l.id, s.shedNumber, l.lotNumber, c.date, c.description, c.price
+    from lots l join costs c on c.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    join farms f on s.id_farm = f.id
+    where c.date between ? and ? and f.id = ?`,
+    getReportCostsAll: `Select l.id, s.shedNumber, l.lotNumber, sum(c.price) as Costo_total
+    from lots l join costs c on c.id_lot = l.id
+    join sheds s on l.id_shed = s.id
+    join farms f on s.id_farm = f.id
+    where c.date between ? and ? and f.id = ?
+    group by l.id`,
+    getNextInventory: "SELECT id, fi.amount, consumed FROM food_inventory fi JOIN food_warehouse fw ON fi.id = fw.id_food_inventory WHERE consumed<fi.amount AND id_food = ? ORDER BY date LIMIT 1;",
+    setFoodConsumed: "UPDATE food_inventory SET consumed = ? WHERE id = ?",
+    addFoodConsumed: "UPDATE food_inventory SET consumed = (SELECT sum(amount) FROM eating_history WHERE id_food_inventory = ?) WHERE id = ?",
+    addEatingHistory: "INSERT INTO eating_history (id_lot, id_food_inventory, amount, foodDate) VALUES (?, ?, ?, NOW())",
+    getEatingHistory: "SELECT id_food, name, mark, date_format(foodDate, \"%d/%m/%Y\") as date, sum(eh.amount) as cantidad FROM eating_history eh JOIN food_inventory fi ON eh.id_food_inventory = fi.id JOIN foods f ON fi.id_food = f.id WHERE id_lot = ? GROUP BY date_format(foodDate, \"%d/%m/%Y\"),id_food",
+    getEatingHistory: "SELECT eh.id, id_food, name, mark, date_format(foodDate, \"%d/%m/%Y\") as date, (eh.amount) as cantidad FROM eating_history eh JOIN food_inventory fi ON eh.id_food_inventory = fi.id JOIN foods f ON fi.id_food = f.id WHERE id_lot = ?",
+    updateEatingHistory: "UPDATE eating_history SET amount = ? WHERE id = ?"
 };
 
 module.exports = consultas;

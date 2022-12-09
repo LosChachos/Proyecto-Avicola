@@ -52,6 +52,8 @@ app.use('/farm', require('./routes/places/weight_history'));
 app.use('/farm',require('./routes/inventory/daily_reports'));
 app.use('/farm/foods',require('./routes/inventory/foods'));
 app.use('/farm',require('./routes/inventory/food_inventory'));
+app.use('/farm', require('./routes/places/reportFarm'));
+app.use('/farm',require('./routes/inventory/eating_history'));
 
 // Public
 app.use(express.static(path.join(__dirname, 'public')));
