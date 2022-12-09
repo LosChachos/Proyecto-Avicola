@@ -41,7 +41,6 @@ const consultas = {
     deleteCosts: "DELETE FROM costs WHERE id_lot = ?",
     updateVaccinationDate: "UPDATE vaccination_date SET observations = ? WHERE id = ?",
     deleteVaccinationDate: "DELETE FROM vaccination_date WHERE id_lot = ?",
-    updateVaccinationDate: "UPDATE vaccination_date SET observations = ? WHERE id = ?",
     deleteDailyReports: "DELETE FROM daily_reports WHERE id_lot = ?",
     deleteWeightHistory: "DELETE FROM weight_history WHERE id_lot = ?",
     getAllUsernames: "SELECT username from users",
@@ -57,11 +56,8 @@ const consultas = {
     updateFoodInventory: "UPDATE food_inventory SET amount = ? WHERE id = ?",
     getFoodInventories: "SELECT id_food, name, mark, weight/1000 as weight, sum(amount) as cantidad FROM food_inventory fi JOIN foods f ON fi.id_food = f.id WHERE id_farm = ? GROUP BY id_food ;",
     updateFoodInventory: "UPDATE food_warehouse SET amount = ? WHERE id_user = ? AND id_food_inventory = ?",
-    getFoodInventories: "SELECT id_food, name, mark, weight, sum(amount) as cantidad FROM food_inventory fi JOIN foods f ON fi.id_food = f.id WHERE id_farm = ? GROUP BY id_food",
-    getFoodInventories:"SELECT id_food, name, mark, weight, sum(fi.amount)- COALESCE(sum(eh.amount),0) as cantidad FROM eating_history eh RIGHT JOIN food_inventory fi ON eh.id_food_inventory = fi.id INNER JOIN foods f ON fi.id_food = f.id WHERE id_farm = ? GROUP BY id_food",
     calculateAmountInInventory: "SELECT sum(amount) FROM food_inventory WHERE id_food = ?",
     getFoodInventoryHistory: "SELECT id_food, name , mark, weight/1000 as weight, price, date, fw.amount as cantidad, id_food_inventory FROM food_warehouse fw JOIN food_inventory fi ON fw.id_food_inventory = fi.id JOIN foods f ON fi.id_food = f.id WHERE id_food = ? AND id_farm = ?",
-    getLots: "Select * from lots where id_shed = ?",
     getWeight: "Select w.id, w.date, w.weight, l.lotNumber from weight_history w join lots l on l.id = w.id_lot where l.id = ?",
     createWeight: "INSERT INTO weight_history (weight, date, id_lot) VALUES (?,?,?)",
     updateWeight: "UPDATE weight_history SET weight = ? WHERE date = ? and id_lot=?",
@@ -121,7 +117,6 @@ const consultas = {
     addFoodConsumed: "UPDATE food_inventory SET consumed = (SELECT sum(amount) FROM eating_history WHERE id_food_inventory = ?) WHERE id = ?",
     addEatingHistory: "INSERT INTO eating_history (id_lot, id_food_inventory, amount, foodDate) VALUES (?, ?, ?, NOW())",
     getEatingHistory: "SELECT id_food, name, mark, date_format(foodDate, \"%d/%m/%Y\") as date, sum(eh.amount) as cantidad FROM eating_history eh JOIN food_inventory fi ON eh.id_food_inventory = fi.id JOIN foods f ON fi.id_food = f.id WHERE id_lot = ? GROUP BY date_format(foodDate, \"%d/%m/%Y\"),id_food",
-    getEatingHistory: "SELECT eh.id, id_food, name, mark, date_format(foodDate, \"%d/%m/%Y\") as date, (eh.amount) as cantidad FROM eating_history eh JOIN food_inventory fi ON eh.id_food_inventory = fi.id JOIN foods f ON fi.id_food = f.id WHERE id_lot = ?",
     updateEatingHistory: "UPDATE eating_history SET amount = ? WHERE id = ?"
 };
 

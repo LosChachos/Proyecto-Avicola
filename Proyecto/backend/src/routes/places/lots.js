@@ -2,7 +2,6 @@ const db = require('../../util/database')
 const express = require('express');
 const router = express.Router();
 const { getLots, updateVaccinationDate, getAllLots, getLot, createLot, updateLot, deleteLot, lastIdLot, createVaccinationDate, deleteCosts, deleteVaccinationDate, deleteDailyReports, deleteWeightHistory, getVaccinationDate } = require("../../util/consultas");
-const { getLots, getAllLots, getLot, createLot, updateLot, deleteLot, lastIdLot, createVaccinationDate, deleteCosts, deleteVaccinationDate, deleteDailyReports, deleteWeightHistory, getVaccinationDate, updateVaccinationDate } = require("../../util/consultas");
 const diseases = ["Newcastle", "Gumboro", "Bronquitis Infecciosa", "Coriza", "Viruela", "Salmonella"];
 const applicationMethod = ["Agua de bebida", "Spray", "Gota ocular", "Puncion alar", "Inyeccion intramuscular", "Inyeccion subcutanea"];
 
