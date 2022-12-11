@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const passport = require('passport');
 const db = require('../util/database')
-const { getAllUsernames, loginUser, getUserWithSocialN, insertPerson, insertUser, getInfoUser } = require("../util/consultas");
+const { getAllUsernames, loginUser, getUserWithSocialN, insertPerson, insertUser, getInfoUser, createRecoveryCode } = require("../util/consultas");
 const helpers = require('../lib/helpers');
 const transporter = require('../util/mailer');
 const secpass = '!8231cnas1ASd1';
@@ -83,7 +83,8 @@ router.post('/forgotpass', async (req, res) => {
             await helpers.matchPassword(secpass, rows[0].password).then(
                 (res2) => {
                     if (!res2) {
-                        this.code = Math.floor(Math.random * 10000);
+                        var recoveryCode = getRandomInt(100000, 999999);
+                        await db.query(createRecoveryCode, [recoveryCode, email]);
                         transporter.sendMail({
                             from: '"RECUPERACIÓN DE CONTRASEÑA - SIGEAVI" <sigeavi.soporte@gmail.com>', // sender address
                             to: email, // list of receivers
@@ -97,7 +98,7 @@ router.post('/forgotpass', async (req, res) => {
                                  <br>
                                  <img src='https://i.postimg.cc/McxFzXSz/logo.png' alt='' width='100px'>
                                  <br>
-                                 <b style='font-size:20px;'>Codigo: ${this.code}</b>
+                                 <b style='font-size:20px;'>Codigo: ${recoveryCode}</b>
                                  <br>
                                  <br>
                                  <b>Sistema de gestión y trazabilidad de granjas avicolas SIGEAVI</b>
@@ -122,9 +123,17 @@ router.post('/forgotpass', async (req, res) => {
     }
 });
 
-router.get('/verifycode/:code',(req, res)=>{
-    const codeInput = req.params.code;
+router.get('/login/recoveryCode', function (req, res) {
+    const {username} = req.body;
+    await db.query(createRecoveryCode, [username]);
+    res.send(true);
 });
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min);
+}
 
 
 module.exports = router;

@@ -119,7 +119,8 @@ const consultas = {
     addEatingHistory: "INSERT INTO eating_history (id_lot, id_food_inventory, amount, foodDate) VALUES (?, ?, ?, NOW())",
     getEatingHistory: "SELECT id_food, name, mark, date_format(foodDate, \"%d/%m/%Y\") as date, sum(eh.amount) as cantidad FROM eating_history eh JOIN food_inventory fi ON eh.id_food_inventory = fi.id JOIN foods f ON fi.id_food = f.id WHERE id_lot = ? GROUP BY date_format(foodDate, \"%d/%m/%Y\"),id_food",
     getEatingHistory: "SELECT eh.id, id_food, name, mark, date_format(foodDate, \"%d/%m/%Y\") as date, (eh.amount) as cantidad FROM eating_history eh JOIN food_inventory fi ON eh.id_food_inventory = fi.id JOIN foods f ON fi.id_food = f.id WHERE id_lot = ?",
-    updateEatingHistory: "UPDATE eating_history SET amount = ? WHERE id = ?"
+    updateEatingHistory: "UPDATE eating_history SET amount = ? WHERE id = ?",
+    createRecoveryCode: "UPDATE users SET recoveryCode = ? WHERE username = ?"
 };
 
 module.exports = consultas;
