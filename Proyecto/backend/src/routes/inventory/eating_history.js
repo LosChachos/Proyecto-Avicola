@@ -1,7 +1,7 @@
 const db = require('../../util/database')
 const express = require('express');
 const router = express.Router();
-const{addEatingHistory, getEatingHistory, updateEatingHistory,getInventoriesByIdFood, setFoodConsumed} = require('../../util/consultas');
+const{addEatingHistory, getEatingHistory, updateEatingHistory, setFoodConsumed,getInventoriesByIdFood} = require('../../util/consultas');
 
 router.get('/:id_farm/eating_history/:id_lot', async (req, res) => {
     const rows = await db.query(getEatingHistory, [req.params.id_lot]);
@@ -31,13 +31,5 @@ router.post('/:id_farm/eating_history/:id_lot/add', async (req, res) => {
     }
     res.send(true);
 }); 
-
-async function addEatingHistoryFunc(id_lot, id_food_inventory, applyed) {
-    const add = await db.query(addEatingHistory, [id_lot, id_food_inventory, applyed]);
-}
-
-async function addFoodConsumedFunc(amount, id_food_inventory) {
-    await db.query(setFoodConsumed, [amount, id_food_inventory]);
-}
 
 module.exports = router;

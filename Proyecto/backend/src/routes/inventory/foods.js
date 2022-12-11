@@ -4,12 +4,12 @@ const router = express.Router();
 const {createFood, searchFoodById, getFoods, getFood} = require('../../util/consultas');
 
 router.post('/add', async (req, res)=>{
-    const {id, name, mark , weigth} = req.body;
+    const {id, name, mark , weight} = req.body;
     const food = await db.query(searchFoodById, [id]);
     if(food.length > 0){
         res.send(false);
     }else{
-        await db.query(createFood, [id, name, mark, (weigth*1000)])
+        await db.query(createFood, [id, name, mark, (weight*1000)])
         res.send(true);
     }
 })
