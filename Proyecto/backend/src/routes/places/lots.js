@@ -1,7 +1,7 @@
 const db = require('../../util/database')
 const express = require('express');
 const router = express.Router();
-const { getLots, getAllLots, getLot, createLot, updateLot, deleteLot, lastIdLot, createVaccinationDate, deleteCosts, deleteVaccinationDate, deleteDailyReports, deleteWeightHistory, getVaccinationDate, updateVaccinationDate } = require("../../util/consultas");
+const { getLots, updateVaccinationDate, getAllLots, getLot, createLot, updateLot, deleteLot, lastIdLot, createVaccinationDate, deleteCosts, deleteVaccinationDate, deleteDailyReports, deleteWeightHistory, getVaccinationDate } = require("../../util/consultas");
 const diseases = ["Newcastle", "Gumboro", "Bronquitis Infecciosa", "Coriza", "Viruela", "Salmonella"];
 const applicationMethod = ["Agua de bebida", "Spray", "Gota ocular", "Puncion alar", "Inyeccion intramuscular", "Inyeccion subcutanea"];
 
@@ -12,8 +12,19 @@ router.get('/:id_farm/:id_shed/lots', async (req, res) => {
 });
 
 router.get('/:id_farm/lots', async (req, res) => {
-    const rows = await db.query(getAllLots);
+    const idFarm = req.params.id_farm;
+    const rows = await db.query(getAllLots,[idFarm]);
     res.send(rows);
+});
+
+router.put('/:id_farm/lots/vaccination_date/update', async (req, res) => {
+    const { id, observations } = req.body;
+    try {
+        await db.query(updateVaccinationDate, [observations, id]);
+        res.send(true);
+    } catch (error) {
+        res.send(false);
+    }
 });
 
 router.get('/:id_farm/lots/:id_lot/vaccination_date', async (req, res) => {

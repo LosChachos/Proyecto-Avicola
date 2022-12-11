@@ -1,22 +1,23 @@
 const db = require('../../util/database')
 const express = require('express');
 const router = express.Router();
-const {getDailyReports, createDailyReport, verifyDateReport, updateConsumption, updateDeaths} = require('../../util/consultas');
+const { getDailyReports, createDailyReport, verifyDateReport, updateConsumption, updateDeaths } = require('../../util/consultas');
 
 router.post('/:id_farm/:id_lot/daily_report/add', async (req, res) => {
-   const {consumption, deaths} = req.body;
-   const id_lot =  req.params.id_lot;
-   const actualReport  = await db.query(verifyDateReport, [parseInt(id_lot)]);
+   const { consumption, deaths } = req.body;
+   const id_lot = req.params.id_lot;
+   let date = new Date(Date.now()).toLocaleDateString('en-CA');
+   const actualReport = await db.query(verifyDateReport, [date, id_lot]);
    console.log(actualReport);
-   if (actualReport.length>0){
-      if(consumption>0){
-         await db.query(updateConsumption, [consumption, parseInt(id_lot)]);
+   if (actualReport.length > 0) {
+      if (consumption > 0) {
+         await db.query(updateConsumption, [consumption, id_lot, date]);
       }
-      if(deaths>0){
-         await db.query(updateDeaths, [deaths, parseInt(id_lot)]);
+      if (deaths > 0) {
+         await db.query(updateDeaths, [deaths, id_lot, date]);
       }
-   }else{
-      await db.query(createDailyReport, [deaths, consumption, parseInt(id_lot)]);
+   } else {
+      await db.query(createDailyReport, [date, deaths, consumption, parseInt(id_lot)]);
    }
    res.send(true)
 });
